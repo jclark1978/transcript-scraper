@@ -20,7 +20,7 @@ The full build plan lives in [docs/PLAN.md](docs/PLAN.md). Architecture decision
 
 ## Scope
 
-- **Target:** Microsoft Teams web app (`teams.microsoft.com`, `teams.live.com`).
+- **Target:** Microsoft Teams web (`teams.microsoft.com`, `teams.live.com`, `teams.cloud.microsoft`) and the SharePoint-hosted Teams Recap transcript viewer (`*.sharepoint.com/.../xplatplugins.aspx` — this is where post-meeting transcripts live in many enterprise tenants).
 - **Browsers (MVP):** Chromium-based — Edge and Chrome. Firefox support is post-MVP.
 - **Out of scope:** The Teams desktop app. Users must open the meeting transcript in the web app.
 - **Output (MVP):** `.txt` file download. Markdown, JSON, and CSV formats are post-MVP.

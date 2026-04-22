@@ -11,7 +11,9 @@
   ],
   "host_permissions": [
     "https://teams.microsoft.com/*",
-    "https://teams.live.com/*"
+    "https://teams.live.com/*",
+    "https://teams.cloud.microsoft/*",
+    "https://*.sharepoint.com/*"
   ],
   "action": {
     "default_title": "Teams Transcript Grabber",
@@ -25,7 +27,9 @@
     {
       "matches": [
         "https://teams.microsoft.com/*",
-        "https://teams.live.com/*"
+        "https://teams.live.com/*",
+        "https://teams.cloud.microsoft/*",
+        "https://*.sharepoint.com/*/_layouts/15/xplatplugins.aspx*"
       ],
       "js": [
         "src/shared/selectors.js",

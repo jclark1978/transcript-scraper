@@ -27,7 +27,13 @@ async function getActiveTab() {
 
 function isTeamsUrl(url) {
   if (!url) return false;
-  return /^https:\/\/teams\.(microsoft|live)\.com\//.test(url);
+  if (/^https:\/\/teams\.microsoft\.com\//.test(url)) return true;
+  if (/^https:\/\/teams\.live\.com\//.test(url)) return true;
+  if (/^https:\/\/teams\.cloud\.microsoft\//.test(url)) return true;
+  // Teams Recap / transcript viewer is served from SharePoint as an
+  // xplatplugins.aspx page — observed at *-my.sharepoint.com for tenants.
+  if (/^https:\/\/[^/]+\.sharepoint\.com\/.*\/_layouts\/15\/xplatplugins\.aspx/i.test(url)) return true;
+  return false;
 }
 
 async function sendToTranscriptFrame(type, extra = {}) {
@@ -217,7 +223,7 @@ async function onDownload() {
   if (!tab || !isTeamsUrl(tab.url)) {
     render({
       phase: 'error',
-      error: 'This extension only works on Microsoft Teams web (teams.microsoft.com or teams.live.com).',
+      error: 'Open a Teams meeting transcript first. This works on teams.microsoft.com, teams.live.com, teams.cloud.microsoft, or the SharePoint-hosted Teams Recap page (*.sharepoint.com/.../xplatplugins.aspx).',
       hasTranscriptPanel: false,
     });
     return;

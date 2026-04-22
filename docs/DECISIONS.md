@@ -6,6 +6,19 @@ Use this instead of burying design rationale in commit messages or losing it in 
 
 ---
 
+## 2026-04-22 — Add SharePoint Recap hosts to manifest matches
+
+**Decision:** Extension now matches `*.sharepoint.com/*/_layouts/15/xplatplugins.aspx*` and `teams.cloud.microsoft/*` in addition to the original `teams.microsoft.com` / `teams.live.com`.
+
+**Context:** Discovered in first-run testing that many enterprise tenants render the post-meeting Teams Recap transcript inside SharePoint at `https://{tenant}-my.sharepoint.com/personal/.../_layouts/15/xplatplugins.aspx` — not on `teams.microsoft.com`. The plugin URL carries `hp=TEAMS-WEB` in its query string, confirming it's the same Teams web plugin, just rehosted inside SharePoint.
+
+**Implications:**
+- Match pattern on SharePoint is narrow (`/_layouts/15/xplatplugins.aspx*`) to avoid injecting into unrelated SharePoint pages.
+- Popup URL check (`isTeamsUrl`) updated to match same hosts.
+- The content script's `hasTranscript()` guard remains the real gate — manifest matches are just the trigger for injection.
+
+---
+
 ## 2026-04-22 — Phase 0 spike validated; proceed with planned architecture
 
 **Decision:** Build the extension as designed in `PLAN.md`. The core assumptions are confirmed.
