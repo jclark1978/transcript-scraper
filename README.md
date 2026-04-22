@@ -58,25 +58,28 @@ This is an unpacked developer install (no Chrome Web Store listing yet).
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the `extension/` directory in this repo.
 5. Pin the extension to the toolbar for convenience.
+6. If you already had a Teams transcript tab open, refresh that tab after loading the extension so the content script is injected.
 
 ## Usage
 
 1. Open Microsoft Teams web (`teams.microsoft.com` or `teams.live.com`).
 2. Open a meeting recording (or live meeting) that has a transcript.
 3. Open the **transcript panel** — entries must be visible.
-4. Click the extension icon → **Start Capture**.
-5. Leave the Teams tab focused while it runs. The panel will scroll automatically. A 900-entry transcript takes under a minute.
-6. When it completes, click **Download .txt**. The browser's Save dialog appears; choose where to save.
+4. If you just loaded or reloaded the extension, refresh the Teams page once before opening the popup.
+5. Click the extension icon → **Start Capture**.
+6. Leave the Teams tab focused while it runs. The panel will scroll automatically. A 900-entry transcript takes under a minute.
+7. When it completes, click **Download .txt**. The browser's Save dialog appears; choose where to save.
 
 ### Troubleshooting
 
 - **"Transcript panel not detected"** — open the transcript panel in Teams first. In a meeting view, click **More > Language and speech > Show transcript**.
+- **"No content script responding"** — first refresh the Teams tab, especially if the page was already open when you loaded or reloaded the extension. If that still happens, the transcript may be inside an iframe that the popup was not targeting correctly; the popup now probes all frames and reinjects the content script into the transcript frame when needed.
 - **"Only works on Microsoft Teams web"** — this extension doesn't run in the Teams desktop app. Open the meeting at `teams.microsoft.com` in a browser instead.
 - **Capture stalls or missing entries** — the extension detects when no new entries have loaded for several iterations and stops. If results look incomplete, check that you left Teams focused the whole time — background tabs get throttled by the browser.
 
 ## Development
 
-Plain JavaScript + MV3, no bundler. Edit files in `extension/` and reload the extension from `edge://extensions` or `chrome://extensions` (click the reload icon on the extension card) to pick up changes.
+Plain JavaScript + MV3, no bundler. Edit files in `extension/` and reload the extension from `edge://extensions` or `chrome://extensions` (click the reload icon on the extension card) to pick up changes. After reloading the extension, refresh any already-open Teams tabs before testing again.
 
 ## Workflow
 

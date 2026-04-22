@@ -11,27 +11,78 @@
 (() => {
   const TG = (globalThis.TG ||= {});
   const TS_PATTERN = /\b(\d{1,2}:\d{2}(?::\d{2})?)\b/;
+  const ARIA_DURATION_PATTERN = /(\d+\s+hour[s]?)?\s*(\d+\s+minute[s]?)?\s*(\d+\s+second[s]?)?$/i;
+
+  function compactText(value) {
+    return (value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function parseHeaderText(headerText) {
+    const compact = compactText(headerText);
+    if (!compact) return { speaker: null, timestamp: null };
+
+    const tsMatch = TS_PATTERN.exec(compact);
+    if (!tsMatch) {
+      return { speaker: compact || null, timestamp: null };
+    }
+
+    const speaker = compact.replace(tsMatch[0], '').trim() || null;
+    return { speaker, timestamp: tsMatch[1] };
+  }
+
+  function parseAriaDuration(labelText) {
+    const compact = compactText(labelText);
+    if (!compact) return { speaker: null, timestamp: null };
+
+    const durationMatch = compact.match(ARIA_DURATION_PATTERN);
+    if (!durationMatch || !durationMatch[0].trim()) {
+      return { speaker: compact || null, timestamp: null };
+    }
+
+    const durationText = durationMatch[0].trim();
+    const speaker = compact.slice(0, compact.length - durationText.length).trim() || null;
+
+    const hoursMatch = /(\d+)\s+hour/i.exec(durationText);
+    const minutesMatch = /(\d+)\s+minute/i.exec(durationText);
+    const secondsMatch = /(\d+)\s+second/i.exec(durationText);
+
+    const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+    const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
+    const seconds = secondsMatch ? parseInt(secondsMatch[1], 10) : 0;
+
+    let timestamp = null;
+    if (hours > 0) {
+      timestamp = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else if (minutes > 0 || seconds > 0) {
+      timestamp = `${minutes}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    return { speaker, timestamp };
+  }
 
   TG.extractEntry = function extractEntry(node) {
     const id = node.id;
     const indexMatch = /sub-entry-(\d+)/.exec(id || '');
     const index = indexMatch ? parseInt(indexMatch[1], 10) : null;
     const posInSet = parseInt(node.getAttribute('aria-posinset') || '0', 10) || null;
-
-    const headerEl = TG.querySelectorAny(node, TG.selectors.HEADER_CANDIDATES);
+    const baseEntryEl = node.closest('[id^="entry-"]');
+    const rightColumnEl = node.closest('[id^="rightColumn-"]');
+    const headerEl = rightColumnEl
+      ? TG.querySelectorAny(rightColumnEl, TG.selectors.HEADER_CANDIDATES)
+      : TG.querySelectorAny(node, TG.selectors.HEADER_CANDIDATES);
+    const eventSpeakerEl = baseEntryEl ? baseEntryEl.querySelector('[class*="eventSpeakerName"]') : null;
 
     let speaker = null;
     let timestamp = null;
 
     if (headerEl) {
-      const headerText = (headerEl.innerText || '').trim();
-      const tsMatch = TS_PATTERN.exec(headerText);
-      if (tsMatch) timestamp = tsMatch[1];
-      const remaining = (tsMatch ? headerText.replace(tsMatch[0], '') : headerText)
-        .trim()
-        .split('\n')[0]
-        .trim();
-      speaker = remaining || null;
+      ({ speaker, timestamp } = parseHeaderText(headerEl.innerText || ''));
+    } else if (eventSpeakerEl) {
+      speaker = compactText(eventSpeakerEl.innerText || '') || null;
+    } else if (baseEntryEl) {
+      const ariaMeta = parseAriaDuration(baseEntryEl.getAttribute('aria-label') || '');
+      speaker = ariaMeta.speaker;
+      timestamp = ariaMeta.timestamp;
     }
 
     let text;
@@ -72,6 +123,11 @@
           text = full;
         }
       }
+    }
+
+    if (speaker && text) {
+      const escapedSpeaker = speaker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      text = text.replace(new RegExp(`^${escapedSpeaker}\\s+`, 'i'), '').trim();
     }
 
     // Normalize whitespace inside text.

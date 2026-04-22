@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Teams Transcript Grabber",
-  "version": "0.1.1",
+  "version": "0.1.9",
   "description": "Reliably capture full Microsoft Teams meeting transcripts (even from virtualized lists) and save as a .txt file.",
   "permissions": [
     "activeTab",

@@ -24,14 +24,26 @@
         <button id="btn-start" type="button" disabled>Start Capture</button>
         <button id="btn-stop" type="button" hidden>Stop</button>
         <button id="btn-download" type="button" hidden>Download .txt</button>
+        <button id="btn-copy" type="button" hidden>Copy Transcript</button>
+        <button id="btn-open" type="button" hidden>Open Transcript</button>
         <button id="btn-reset" type="button" hidden>Capture Another</button>
+      </section>
+
+      <section class="export-preview" id="export-preview" hidden>
+        <div class="export-preview__label">Transcript Preview</div>
+        <textarea
+          id="export-content"
+          class="export-preview__content"
+          readonly
+          spellcheck="false"
+        ></textarea>
       </section>
 
       <section class="hint" id="hint" hidden></section>
     </main>
 
     <footer>
-      <span class="version">v0.1.1</span>
+      <span class="version">v0.1.9</span>
     </footer>
 
     <script src="popup.js"></script>
