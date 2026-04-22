@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Teams Transcript Grabber</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Teams Transcript Grabber</h1>
+    </header>
+
+    <main>
+      <section id="status" class="status status--idle" aria-live="polite">
+        <div class="status__label" id="status-label">Checking page…</div>
+        <div class="status__progress" id="status-progress" hidden>
+          <div class="bar"><div class="bar__fill" id="bar-fill"></div></div>
+          <div class="status__numbers" id="status-numbers"></div>
+        </div>
+        <div class="status__error" id="status-error" hidden></div>
+      </section>
+
+      <section class="controls">
+        <button id="btn-start" type="button" disabled>Start Capture</button>
+        <button id="btn-stop" type="button" hidden>Stop</button>
+        <button id="btn-download" type="button" hidden>Download .txt</button>
+        <button id="btn-reset" type="button" hidden>Capture Another</button>
+      </section>
+
+      <section class="hint" id="hint" hidden></section>
+    </main>
+
+    <footer>
+      <span class="version">v0.1.0</span>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

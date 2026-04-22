@@ -6,6 +6,25 @@ Use this instead of burying design rationale in commit messages or losing it in 
 
 ---
 
+## 2026-04-22 — Phase 0 spike validated; proceed with planned architecture
+
+**Decision:** Build the extension as designed in `PLAN.md`. The core assumptions are confirmed.
+
+**Context:** Ran `spikes/phase-0-validation.js` against a real 908-entry Teams transcript:
+- **Detection** — `#OneTranscript` and `#scrollToTargetTargetedFocusZone` located cleanly. Top frame, not an iframe.
+- **ID stability** — `sub-entry-N` IDs rematch the same content after scroll-away-and-back. Safe to use as the dedup key.
+- **Capture** — scroll-and-harvest reached 908 of 908 entries (100%) in 148 iterations.
+
+**Implications for extension code:**
+- Popup can talk directly to frame 0; no `webNavigation` permission needed.
+- `sub-entry-N` indices are **0-based**, running `[0, setSize-1]`. Gap-fill must iterate `0..setSize-1`, not `1..setSize` (the spike had this off-by-one; fixed in `capture.js`).
+- Entries at indices 0 and `setSize-1` are "started/stopped transcription" system events, not utterances. We include them for MVP; users can strip if desired. Decide later whether to filter.
+- Speaker/timestamp extraction via `[id^="itemHeader-"]` did **not** match in the real DOM. The raw `innerText` contains the speaker, so the extractor uses multiple header-selector candidates plus an `innerText`-parsing fallback.
+
+**Alternatives considered:** Abort the architecture if IDs turned out unstable. Did not apply — they were stable.
+
+---
+
 ## 2026-04-22 — Plain JavaScript + MV3, no bundler (for MVP)
 
 **Decision:** Build the extension as plain JavaScript targeting Manifest V3, loaded unpacked during development. No Vite, no TypeScript, no build step.

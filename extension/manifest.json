@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Teams Transcript Grabber",
+  "version": "0.1.0",
+  "description": "Reliably capture full Microsoft Teams meeting transcripts (even from virtualized lists) and save as a .txt file.",
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://teams.microsoft.com/*",
+    "https://teams.live.com/*"
+  ],
+  "action": {
+    "default_title": "Teams Transcript Grabber",
+    "default_popup": "src/popup/popup.html"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://teams.microsoft.com/*",
+        "https://teams.live.com/*"
+      ],
+      "js": [
+        "src/shared/selectors.js",
+        "src/shared/extractor.js",
+        "src/shared/formatter.js",
+        "src/shared/filename.js",
+        "src/content/capture.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}
